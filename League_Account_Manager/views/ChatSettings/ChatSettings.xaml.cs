@@ -1,12 +1,12 @@
-﻿using System.Diagnostics;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Forms;
-using League_Account_Manager.Services;
+﻿using League_Account_Manager.Services;
 using League_Account_Manager.Windows;
 using Newtonsoft.Json.Linq;
 using NLog;
 using Notification.Wpf;
+using System.Diagnostics;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Forms;
 using Wpf.Ui.Controls;
 
 namespace League_Account_Manager.views.ChatSettings;
@@ -277,7 +277,7 @@ public partial class ChatSettings : Page
 
                 foreach (var item in tmp)
                     list.Add(new IconData
-                        { Name = item["localizations"]["en_US"]["name"].ToString(), ID = item["itemId"].ToString() });
+                    { Name = item["localizations"]["en_US"]["name"].ToString(), ID = item["itemId"].ToString() });
 
                 Dispatcher.Invoke(() =>
                 {
@@ -312,7 +312,7 @@ public partial class ChatSettings : Page
                     if (item["subInventoryType"].ToString() == "RECOLOR")
                         continue;
                     listSkins.Add(new IconData
-                        { Name = item["localizations"]["en_US"]["name"].ToString(), ID = item["itemId"].ToString() });
+                    { Name = item["localizations"]["en_US"]["name"].ToString(), ID = item["itemId"].ToString() });
                 }
 
                 Dispatcher.Invoke(() =>

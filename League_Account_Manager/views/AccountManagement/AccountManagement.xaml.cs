@@ -1,11 +1,4 @@
-﻿using System.ComponentModel;
-using System.Diagnostics;
-using System.Globalization;
-using System.IO;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
-using CsvHelper;
+﻿using CsvHelper;
 using CsvHelper.Configuration;
 using FlaUI.Core.AutomationElements;
 using FlaUI.Core.Definitions;
@@ -16,6 +9,13 @@ using League_Account_Manager.Windows;
 using Newtonsoft.Json.Linq;
 using NLog;
 using Notification.Wpf;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Globalization;
+using System.IO;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
 using Application = FlaUI.Core.Application;
 
 
@@ -54,11 +54,11 @@ public partial class AccountManagement : Page
     private async void OnChanged(object source, FileSystemEventArgs e)
     {
 
-            await loaddata();
-            Dispatcher.Invoke(() =>
-            {
+        await loaddata();
+        Dispatcher.Invoke(() =>
+        {
             Championlist.Items.SortDescriptions.Add(new SortDescription("level", ListSortDirection.Descending));
-            });
+        });
     }
 
 
@@ -179,7 +179,7 @@ public partial class AccountManagement : Page
             var Rank = string.IsNullOrEmpty(rankedInfo["queueMap"]["RANKED_SOLO_5x5"]["tier"].ToString()) ? "Unranked" : rankedInfo["queueMap"]["RANKED_SOLO_5x5"]["tier"] + " " + rankedInfo["queueMap"]["RANKED_SOLO_5x5"]["division"] + ", " +
                        rankedInfo["queueMap"]["RANKED_SOLO_5x5"]["wins"] + " Wins, " +
                        rankedInfo["queueMap"]["RANKED_SOLO_5x5"]["losses"] + " Losses";
-            var Rank2 = string.IsNullOrEmpty(rankedInfo["queueMap"]["RANKED_FLEX_SR"]["tier"].ToString()) ? "Unranked" : rankedInfo["queueMap"]["RANKED_FLEX_SR"]["tier"] + " " +  rankedInfo["queueMap"]["RANKED_FLEX_SR"]["division"]  + ", " +
+            var Rank2 = string.IsNullOrEmpty(rankedInfo["queueMap"]["RANKED_FLEX_SR"]["tier"].ToString()) ? "Unranked" : rankedInfo["queueMap"]["RANKED_FLEX_SR"]["tier"] + " " + rankedInfo["queueMap"]["RANKED_FLEX_SR"]["division"] + ", " +
                        rankedInfo["queueMap"]["RANKED_FLEX_SR"]["wins"] + " Wins, " +
                        rankedInfo["queueMap"]["RANKED_FLEX_SR"]["losses"] + " Losses";
 
@@ -200,28 +200,28 @@ public partial class AccountManagement : Page
 
             ring();
             foreach (var item in lootInfo)
-            foreach (var thing in item)
-                if ((int)thing["count"] > 0)
-                {
-                    var resp = await lcu.Connector("league", "get", "/lol-loot/v1/player-loot/" + thing["lootId"], "");
-                    var responseBody = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    try
+                foreach (var thing in item)
+                    if ((int)thing["count"] > 0)
                     {
-                        var Loot = JObject.Parse(responseBody);
-                        if (Loot["itemDesc"] != "")
-                            Lootlist += ":" + Loot["itemDesc"] + " x " + Loot["count"];
-                        else if (Loot["localizedName"] != "")
-                            Lootlist += ":" + Loot["localizedName"] + " x " + Loot["count"];
-                        else
-                            Lootlist += ":" + Loot["asset"] + " x " + Loot["count"];
-                    }
-                    catch (Exception ex)
-                    {
-                        // Handle exception
-                    }
+                        var resp = await lcu.Connector("league", "get", "/lol-loot/v1/player-loot/" + thing["lootId"], "");
+                        var responseBody = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
+                        try
+                        {
+                            var Loot = JObject.Parse(responseBody);
+                            if (Loot["itemDesc"] != "")
+                                Lootlist += ":" + Loot["itemDesc"] + " x " + Loot["count"];
+                            else if (Loot["localizedName"] != "")
+                                Lootlist += ":" + Loot["localizedName"] + " x " + Loot["count"];
+                            else
+                                Lootlist += ":" + Loot["asset"] + " x " + Loot["count"];
+                        }
+                        catch (Exception ex)
+                        {
+                            // Handle exception
+                        }
 
-                    Lootcount++;
-                }
+                        Lootcount++;
+                    }
 
             ring();
             ActualAccountlists.RemoveAll(x => x.username == SelectedUsername);
@@ -620,8 +620,8 @@ public partial class AccountManagement : Page
                         rp = values.Length > 6 && !string.IsNullOrEmpty(values[6])
                             ? Convert.ToInt32(values[6].Replace("\"", "").Replace("\'", ""))
                             : 0,
-                         rank= values.Length > 7 ? values[7] : "",
-                         rank2 = values.Length > 14 ? values[14] : "",
+                        rank = values.Length > 7 ? values[7] : "",
+                        rank2 = values.Length > 14 ? values[14] : "",
                         champions = values.Length > 8 ? values[8] : "",
                         skins = values.Length > 9 ? values[9] : "",
                         Champions = values.Length > 10 && !string.IsNullOrEmpty(values[10])
@@ -770,7 +770,7 @@ public partial class AccountManagement : Page
                                 var url = $"https:/www.op.gg/summoners/{RegionHelperUtil.RegionParser(selectedrow.server)}/{selectedrow.riotID.Replace("#", "-")}";
                                 OpenUrl(url);
                                 break;
-                                    
+
                         }
 
                         if (secondWindow != null)

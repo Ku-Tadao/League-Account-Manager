@@ -1,14 +1,13 @@
-﻿using System.Diagnostics;
-using System.IO;
-using System.Text.RegularExpressions;
-using System.Windows;
-using System.Windows.Controls;
-using League_Account_Manager.views.AccountManagement;
-using League_Account_Manager.Windows;
+﻿using League_Account_Manager.Windows;
 using Microsoft.Win32;
 using Newtonsoft.Json.Linq;
 using NLog;
 using Notification.Wpf;
+using System.Diagnostics;
+using System.IO;
+using System.Text.RegularExpressions;
+using System.Windows;
+using System.Windows.Controls;
 using static League_Account_Manager.Services.lcu;
 
 namespace League_Account_Manager.views.Miscellaneous;

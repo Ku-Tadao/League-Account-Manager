@@ -1,13 +1,13 @@
-﻿using System.Diagnostics;
+﻿using League_Account_Manager.Windows;
+using Newtonsoft.Json.Linq;
+using NLog;
+using Notification.Wpf;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
-using League_Account_Manager.Windows;
-using Newtonsoft.Json.Linq;
-using NLog;
-using Notification.Wpf;
 
 namespace League_Account_Manager.Utilities;
 

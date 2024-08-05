@@ -1,9 +1,9 @@
-﻿using System.Diagnostics;
-using System.Windows;
-using System.Windows.Controls;
-using League_Account_Manager.Services;
+﻿using League_Account_Manager.Services;
 using Newtonsoft.Json.Linq;
 using NLog;
+using System.Diagnostics;
+using System.Windows;
+using System.Windows.Controls;
 
 namespace League_Account_Manager.views.LootManager;
 
@@ -36,36 +36,42 @@ public partial class LootManager : Page
             var resp = await lcu.Connector("league", "get", "/lol-loot/v1/player-loot-map", "");
             JToken responseBody = JToken.Parse(await resp.Content.ReadAsStringAsync().ConfigureAwait(false));
             foreach (var jtoken in responseBody)
-            foreach (var thing in jtoken)
-            {
-                Console.WriteLine(thing);
-                if (thing["disenchantLootName"].ToString() == "CURRENCY_champion")
-                    LootChampsList.Add(new LootChamps
-                    {
-                        name = thing["itemDesc"] + " x " + thing["count"] + " " + thing["disenchantValue"] + " BE",
-                        id = thing["lootId"].ToString(), count = Convert.ToInt32(thing["count"]),
-                        price = Convert.ToInt32(thing["count"]), value = Convert.ToInt32(thing["disenchantValue"]),
-                        disenchantRecipeName = thing["disenchantRecipeName"].ToString()
-                    });
-                else if (thing["disenchantLootName"].ToString() == "CURRENCY_cosmetic")
-                    if (thing["itemDesc"].ToString() != "")
-                        LootSkinsList.Add(new LootChamps
+                foreach (var thing in jtoken)
+                {
+                    Console.WriteLine(thing);
+                    if (thing["disenchantLootName"].ToString() == "CURRENCY_champion")
+                        LootChampsList.Add(new LootChamps
                         {
-                            name = thing["itemDesc"] + " x " + thing["count"] + " " + thing["disenchantValue"] + " OE",
-                            id = thing["lootId"].ToString(), count = Convert.ToInt32(thing["count"]),
-                            price = Convert.ToInt32(thing["count"]), value = Convert.ToInt32(thing["disenchantValue"]),
+                            name = thing["itemDesc"] + " x " + thing["count"] + " " + thing["disenchantValue"] + " BE",
+                            id = thing["lootId"].ToString(),
+                            count = Convert.ToInt32(thing["count"]),
+                            price = Convert.ToInt32(thing["count"]),
+                            value = Convert.ToInt32(thing["disenchantValue"]),
                             disenchantRecipeName = thing["disenchantRecipeName"].ToString()
                         });
-                    else
-                        LootSkinsList.Add(new LootChamps
-                        {
-                            name = thing["localizedName"] + " x " + thing["count"] + " " + thing["disenchantValue"] +
-                                   " OE",
-                            id = thing["lootId"].ToString(), count = Convert.ToInt32(thing["count"]),
-                            price = Convert.ToInt32(thing["count"]), value = Convert.ToInt32(thing["disenchantValue"]),
-                            disenchantRecipeName = thing["disenchantRecipeName"].ToString()
-                        });
-            }
+                    else if (thing["disenchantLootName"].ToString() == "CURRENCY_cosmetic")
+                        if (thing["itemDesc"].ToString() != "")
+                            LootSkinsList.Add(new LootChamps
+                            {
+                                name = thing["itemDesc"] + " x " + thing["count"] + " " + thing["disenchantValue"] + " OE",
+                                id = thing["lootId"].ToString(),
+                                count = Convert.ToInt32(thing["count"]),
+                                price = Convert.ToInt32(thing["count"]),
+                                value = Convert.ToInt32(thing["disenchantValue"]),
+                                disenchantRecipeName = thing["disenchantRecipeName"].ToString()
+                            });
+                        else
+                            LootSkinsList.Add(new LootChamps
+                            {
+                                name = thing["localizedName"] + " x " + thing["count"] + " " + thing["disenchantValue"] +
+                                       " OE",
+                                id = thing["lootId"].ToString(),
+                                count = Convert.ToInt32(thing["count"]),
+                                price = Convert.ToInt32(thing["count"]),
+                                value = Convert.ToInt32(thing["disenchantValue"]),
+                                disenchantRecipeName = thing["disenchantRecipeName"].ToString()
+                            });
+                }
 
             SkinLootTable.ItemsSource = null;
             SkinLootTable.ItemsSource = LootSkinsList;

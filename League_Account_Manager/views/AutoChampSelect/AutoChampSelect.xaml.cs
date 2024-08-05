@@ -1,8 +1,8 @@
-﻿using System.Windows;
-using System.Windows.Controls;
-using League_Account_Manager.Services;
+﻿using League_Account_Manager.Services;
 using Newtonsoft.Json.Linq;
 using NLog;
+using System.Windows;
+using System.Windows.Controls;
 using Button = System.Windows.Controls.Button;
 
 
@@ -26,13 +26,13 @@ public partial class AutoChampSelect : Page
     public AutoChampSelect()
     {
         InitializeComponent();
-   
+
         {
             Task.Run(() => BackgroundDataFunction1());
             Task.Run(() => BackgroundDataFunction2());
             Task.Run(() => LoadBuyableData());
-    
-   
+
+
         }
 
     }
@@ -68,7 +68,9 @@ public partial class AutoChampSelect : Page
                 ban2Champion.OriginalItemsSource = listChamps;
                 ban3Champion.OriginalItemsSource = listChamps;
             });
-        } catch (Exception ex) {
+        }
+        catch (Exception ex)
+        {
             LogManager.GetCurrentClassLogger().Error(ex, "Error loading data");
         }
     }
@@ -133,7 +135,7 @@ public partial class AutoChampSelect : Page
                             champselectaction = null;
                         }
 
-                        
+
                         foreach (JObject teamArray in (JArray)champselectJObject["myTeam"])
                             if (teamArray["cellId"].ToString() == champselectJObject["localPlayerCellId"].ToString())
                             {
@@ -176,9 +178,11 @@ public partial class AutoChampSelect : Page
 
                 await Task.Delay(1000);
             }
-        }catch (Exception e) {
+        }
+        catch (Exception e)
+        {
             LogManager.GetCurrentClassLogger().Error(e, "Error loading data");
-        }        
+        }
 
     }
 
@@ -397,11 +401,11 @@ public partial class AutoChampSelect : Page
                     sentmsg = true;
                 }
             }
-            else if (queueJObject == null ||( queueJObject.ContainsKey("phase") && queueJObject["phase"].ToString() != "ChampSelect"))
+            else if (queueJObject == null || (queueJObject.ContainsKey("phase") && queueJObject["phase"].ToString() != "ChampSelect"))
             {
                 sentmsg = false;
             }
-            await Task.Delay(1000, ct); 
+            await Task.Delay(1000, ct);
         }
     }
 

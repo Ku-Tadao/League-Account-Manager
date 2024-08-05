@@ -1,11 +1,11 @@
-﻿using System.Collections.ObjectModel;
+﻿using Newtonsoft.Json.Linq;
+using NLog;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Net;
 using System.Net.Http;
 using System.Windows;
 using System.Windows.Controls;
-using Newtonsoft.Json.Linq;
-using NLog;
 using static League_Account_Manager.Services.lcu;
 
 namespace League_Account_Manager.views.PlayerReportTool;

@@ -1,13 +1,13 @@
-﻿using System.Diagnostics;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Windows;
-using League_Account_Manager.Services;
+﻿using League_Account_Manager.Services;
 using League_Account_Manager.Utilities;
 using NLog;
 using NLog.Config;
 using NLog.Targets;
 using Notification.Wpf;
+using System.Diagnostics;
+using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Windows;
 using LogLevel = NLog.LogLevel;
 
 namespace League_Account_Manager.Windows;

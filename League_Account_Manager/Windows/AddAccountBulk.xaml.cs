@@ -1,5 +1,5 @@
-﻿using System.Windows;
-using League_Account_Manager.views.AddAccount;
+﻿using League_Account_Manager.views.AddAccount;
+using System.Windows;
 
 namespace League_Account_Manager.Windows;
 

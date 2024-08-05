@@ -1,10 +1,10 @@
-﻿using System.Diagnostics;
+﻿using League_Account_Manager.Services;
+using League_Account_Manager.Utilities;
+using Newtonsoft.Json.Linq;
+using System.Diagnostics;
 using System.Net.Http;
 using System.Windows;
 using System.Windows.Input;
-using League_Account_Manager.Services;
-using League_Account_Manager.Utilities;
-using Newtonsoft.Json.Linq;
 
 namespace League_Account_Manager.Windows;
 

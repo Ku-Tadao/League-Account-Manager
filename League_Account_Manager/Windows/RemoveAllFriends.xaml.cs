@@ -1,5 +1,5 @@
-﻿using System.Windows;
-using League_Account_Manager.views.Miscellaneous;
+﻿using League_Account_Manager.views.Miscellaneous;
+using System.Windows;
 
 namespace League_Account_Manager.Windows;
 

@@ -1,7 +1,5 @@
 ﻿
 using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using System.Resources;
 
 // General Information
@@ -15,5 +13,5 @@ using System.Resources;
 // Version informationr(
 [assembly: AssemblyVersion("2.0.0.20")]
 [assembly: AssemblyFileVersion("2.0.0.20")]
-[assembly: NeutralResourcesLanguageAttribute( "en-US" )]
+[assembly: NeutralResourcesLanguageAttribute("en-US")]
 
