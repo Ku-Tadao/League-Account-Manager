@@ -17,6 +17,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Application = FlaUI.Core.Application;
+using static League_Account_Manager.Utilities.Settings;
 
 
 namespace League_Account_Manager.views.AccountManagement;
@@ -26,6 +27,8 @@ namespace League_Account_Manager.views.AccountManagement;
 /// </summary>
 public partial class AccountManagement : Page
 {
+    public static settings1 settingsloaded = new settings1();
+
     public static string? SelectedUsername;
     public static string? SelectedPassword;
     private readonly CsvConfiguration config = new(CultureInfo.CurrentCulture) { Delimiter = ";" };
@@ -146,7 +149,7 @@ public partial class AccountManagement : Page
             {
                 notif.notificationManager.Show("Error", "League of Legends client is not running!",
                     NotificationType.Notification,
-                    "WindowArea", TimeSpan.FromSeconds(10), null, null, null, null, () => notif.donothing(), "OK",
+                    "WindowArea", TimeSpan.FromSeconds(10), null, null, null, null, notif.donothing, "OK",
                     NotificationTextTrimType.NoTrim, 2U, true, null, null, false);
                 return;
             }
@@ -173,13 +176,13 @@ public partial class AccountManagement : Page
             var skinlist = "";
             var skincount = 0;
             var champlist = "";
-            var champcount = 0;
+            var champcount = 0; 
             var Lootlist = "";
             var Lootcount = 0;
-            var Rank = string.IsNullOrEmpty(rankedInfo["queueMap"]["RANKED_SOLO_5x5"]["tier"].ToString()) ? "Unranked" : rankedInfo["queueMap"]["RANKED_SOLO_5x5"]["tier"] + " " + rankedInfo["queueMap"]["RANKED_SOLO_5x5"]["division"] + ", " +
+            var Rank = string.IsNullOrEmpty(rankedInfo["queueMap"]["RANKED_SOLO_5x5"]["tier"].ToString()) ? "Unranked" : rankedInfo["queueMap"]["RANKED_SOLO_5x5"]["tier"] + " " + rankedInfo["queueMap"]["RANKED_SOLO_5x5"]["division"] + " " + rankedInfo["queueMap"]["RANKED_SOLO_5x5"]["leaguePoints"] + " LP, " +
                        rankedInfo["queueMap"]["RANKED_SOLO_5x5"]["wins"] + " Wins, " +
                        rankedInfo["queueMap"]["RANKED_SOLO_5x5"]["losses"] + " Losses";
-            var Rank2 = string.IsNullOrEmpty(rankedInfo["queueMap"]["RANKED_FLEX_SR"]["tier"].ToString()) ? "Unranked" : rankedInfo["queueMap"]["RANKED_FLEX_SR"]["tier"] + " " + rankedInfo["queueMap"]["RANKED_FLEX_SR"]["division"] + ", " +
+            var Rank2 = string.IsNullOrEmpty(rankedInfo["queueMap"]["RANKED_FLEX_SR"]["tier"].ToString()) ? "Unranked" : rankedInfo["queueMap"]["RANKED_FLEX_SR"]["tier"] + " " +  rankedInfo["queueMap"]["RANKED_FLEX_SR"]["division"]  + ", " +
                        rankedInfo["queueMap"]["RANKED_FLEX_SR"]["wins"] + " Wins, " +
                        rankedInfo["queueMap"]["RANKED_FLEX_SR"]["losses"] + " Losses";
 
@@ -224,6 +227,7 @@ public partial class AccountManagement : Page
                     }
 
             ring();
+            AccountList note = ActualAccountlists.FindLast(x => x.username == SelectedUsername);
             ActualAccountlists.RemoveAll(x => x.username == SelectedUsername);
             ring();
             ActualAccountlists.Add(new AccountList
@@ -242,7 +246,8 @@ public partial class AccountManagement : Page
                 Skins = Convert.ToInt32(skincount),
                 Loot = Lootlist,
                 Loots = Convert.ToInt32(Lootcount),
-                rank2 = Rank2
+                rank2 = Rank2,
+                note = note.note
             });
             ring();
             using (var writer =
@@ -633,7 +638,8 @@ public partial class AccountManagement : Page
                         Loot = values.Length > 12 ? values[12] : "",
                         Loots = values.Length > 13 && !string.IsNullOrEmpty(values[13])
                             ? Convert.ToInt32(values[13].Replace("\"", "").Replace("\'", ""))
-                            : 0
+                            : 0,
+                        note = values.Length > 15 ? values[15] : "",
                     };
 
                     records.Add(record);
@@ -666,6 +672,7 @@ public partial class AccountManagement : Page
             account.skins = RemoveDoubleQuotes(account.skins);
             account.Loot = RemoveDoubleQuotes(account.Loot);
             account.rank2 = RemoveDoubleQuotes(account.rank2);
+            account.note = RemoveDoubleQuotes(account.note);
         }
     }
 
@@ -754,6 +761,7 @@ public partial class AccountManagement : Page
                         if (selectedrow == null) return;
                         if (header == null) return;
                         OwnedChampionsSearch? secondWindow = null;
+                        AccountNoteWindow? noteWindow = null;
 
                         switch (header)
                         {
@@ -762,6 +770,9 @@ public partial class AccountManagement : Page
                                 break;
                             case "Skins":
                                 secondWindow = new OwnedChampionsSearch(selectedrow.skins);
+                                break;
+                            case "Notes":
+                                noteWindow = new AccountNoteWindow(selectedrow);
                                 break;
                             case "Loot":
                                 secondWindow = new OwnedChampionsSearch(selectedrow.Loot);
@@ -778,6 +789,12 @@ public partial class AccountManagement : Page
                             await secondWindow.Dispatcher.InvokeAsync(() => { secondWindow.Show(); });
 
                             while (secondWindow.IsLoaded) await Task.Delay(100);
+                        }
+                        else
+                        {
+                            await noteWindow.Dispatcher.InvokeAsync(() => { noteWindow.Show(); });
+
+                            while (noteWindow.IsLoaded) await Task.Delay(100);
                         }
                     }
 
@@ -815,7 +832,7 @@ public partial class AccountManagement : Page
 
     private async void SecondaryClient_OnClick(object sender, RoutedEventArgs e)
     {
-        Process.Start(Utilities.Settings.settingsloaded.LeaguePath, "--allow-multiple-clients");
+        Process.Start(settingsloaded.riotPath, "--launch-product=league_of_legends --launch-patchline=live --allow-multiple-clients");
     }
 
     private void OpenUrl(string url)
@@ -840,6 +857,7 @@ public partial class AccountManagement : Page
         public string? Loot { get; set; }
         public int Loots { get; set; }
         public string? rank2 { get; set; }
+        public string? note { get; set; }
     }
 
     public class Wallet

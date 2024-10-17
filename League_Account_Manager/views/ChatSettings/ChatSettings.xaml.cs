@@ -41,6 +41,11 @@ public partial class ChatSettings : Page
                 await LoadIcons();
                 await LoadSkins();
                 loadranks();
+                if (list.Count < 1)
+                {
+                    await Task.Delay(5000);
+                    continue;
+                }
                 break; // If all methods complete successfully, break the loop
             }
             catch (Exception e)

@@ -8,6 +8,11 @@ using System.IO;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
+using System.Xml.Linq;
+using Microsoft.Win32;
+using Newtonsoft.Json.Linq;
+using NLog;
+using Notification.Wpf;
 using static League_Account_Manager.Services.lcu;
 
 namespace League_Account_Manager.views.Miscellaneous;
