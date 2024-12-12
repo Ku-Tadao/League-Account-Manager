@@ -7,6 +7,11 @@ on:
       - "v*.*.*"
   workflow_dispatch:
 
+env:
+  DOTNET_NOLOGO: true                     # Disable the .NET logo
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true # Skip the .NET first time experience
+  DOTNET_CLI_TELEMETRY_OPTOUT: true      # Disable .NET CLI telemetry
+
 jobs:
   build:
     runs-on: windows-latest
@@ -14,99 +19,14 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
 
     - name: Install .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 8.0.x  
+        dotnet-version: 7.0.x
 
-    - name: Set Version
-      shell: pwsh
-      run: |
-        if ("${{ github.ref }}".StartsWith("refs/tags/v")) {
-          $version = "${{ github.ref }}".Replace('refs/tags/v', '')
-        } else {
-          $version = "1.0.0.0"  # Default version for non-tag builds
-        }
-        echo "VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Append
-
-    - name: Generate Release Notes
-      if: startsWith(github.ref, 'refs/tags/')
-      id: release_notes
-      shell: pwsh
-      run: |
-        $lastTag = $(git describe --tags --abbrev=0 "HEAD^" 2>$null) ?? "HEAD~10"
-        
-        # Get commit history and categorize changes
-        $commits = git log --pretty=format:"- %s%n%b" "$lastTag..HEAD"
-        
-        $features = $commits | Where-Object { $_ -match '^- feat|add|enhance|improve' }
-        $fixes = $commits | Where-Object { $_ -match '^- fix|bug|patch|resolve' }
-        $docs = $commits | Where-Object { $_ -match '^- docs|documentation|comment' }
-        $other = $commits | Where-Object { 
-          $_ -notmatch '^- feat|add|enhance|improve' -and 
-          $_ -notmatch '^- fix|bug|patch|resolve' -and 
-          $_ -notmatch '^- docs|documentation|comment' -and
-          $_ -match '^-'
-        }
-
-        # Format release notes
-        $notes = @"
-        ## What's Changed
-
-        ### 🚀 New Features
-        $($features -join "`n")
-
-        ### 🐛 Fixes
-        $($fixes -join "`n")
-
-        ### 📚 Documentation
-        $($docs -join "`n")
-
-        ### 🔧 Other Changes
-        $($other -join "`n")
-
-        ---
-        For transparency and security:
-        - This is an open-source fork focused on code clarity and transparency
-        - You can review the complete source code in this repository
-        - All changes are documented and visible in the commit history
-        "@
-
-        $notes = $notes.Replace('"','\"').Replace('\','\\')
-        echo "RELEASE_NOTES<<EOF" >> $env:GITHUB_ENV
-        echo "$notes" >> $env:GITHUB_ENV
-        echo "EOF" >> $env:GITHUB_ENV
-
-    - name: Generate Documentation
-      if: startsWith(github.ref, 'refs/tags/')
-      run: |
-        # Create docs folder if it doesn't exist
-        New-Item -ItemType Directory -Force -Path docs
-        
-        # Generate simple documentation of public methods and classes
-        Get-ChildItem -Recurse -Filter *.cs | 
-        Where-Object { $_.FullName -notmatch 'obj|bin' } |
-        ForEach-Object {
-          $filename = $_.BaseName
-          $content = Get-Content $_.FullName -Raw
-          $namespace = if($content -match 'namespace\s+([^\s{]+)') { $matches[1] } else { "Unknown" }
-          $classMatch = $content -match 'public\s+(?:class|interface|enum)\s+([^\s:{]+)'
-          $className = if($classMatch) { $matches[1] } else { "Unknown" }
-          
-          Add-Content -Path "docs/$filename.md" @"
-          # $filename
-
-          Namespace: $namespace
-          Class: $className
-
-          ## Purpose
-          This file is part of the transparent, open-source fork of the League Account Manager.
-          All functionality is clearly documented and visible for user review.
-          "@
-        }
+    - name: Setup Windows SDK
+      uses: microsoft/setup-msbuild@v2
 
     - name: Publish
       run: |
@@ -114,41 +34,32 @@ jobs:
           -c Release `
           --self-contained true `
           -r win-x64 `
-          /p:PublishSingleFile=true `
-          /p:Version=${{ env.VERSION }} `
-          /p:AssemblyVersion=${{ env.VERSION }} `
-          /p:FileVersion=${{ env.VERSION }}
-
-    - name: Zip Release Files
-      if: startsWith(github.ref, 'refs/tags/')
-      run: |
-        Compress-Archive -Path League_Account_Manager/bin/Release/net7.0-Windows/win-x64/publish/* -DestinationPath Release.zip
-        Compress-Archive -Path docs/* -DestinationPath Documentation.zip
+          -p:PublishSingleFile=true `
+          -p:EnableWindowsTargeting=true `
+          -p:WindowsPackageType=None `
+          -p:Version=${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || '1.0.0-dev' }} `
+          -p:NoWarn=CA1416
 
     - name: Create Release
       if: startsWith(github.ref, 'refs/tags/')
       uses: softprops/action-gh-release@v1
       with:
-        files: |
-          Release.zip
-          Documentation.zip
-        name: "Release ${{ env.VERSION }} - Transparent Fork"
+        name: "Release ${{ github.ref_name }}"
         body: |
-          This is a transparent, security-focused fork of the League Account Manager.
+          ## Changes in version ${{ github.ref_name }}
           
-          ${{ env.RELEASE_NOTES }}
+          ${{ github.event.head_commit.message }}
           
-          ## 🔍 Transparency
-          - All source code is visible and documented
-          - No obfuscation or hidden functionality
-          - Documentation included in release
+          ## Details
+          - Single-file executable for Windows
+          - Self-contained (no .NET installation required)
+          - Transparent, non-obfuscated code
           
-          ## 📦 Release Files
-          - `Release.zip`: Contains the application
-          - `Documentation.zip`: Contains documentation of public methods and classes
+          ## Note
+          This is a clear, transparent fork of the League Account Manager. The complete source code is available for review.
           
-          ## ⚠️ Note
-          Always review the source code for any application that interacts with your League account.
+        files: |
+          League_Account_Manager/bin/Release/net7.0-windows/win-x64/publish/*.exe
         draft: false
         prerelease: false
       env:
