@@ -5,8 +5,8 @@ on:
     branches: [ "master" ]
     tags:
       - "v*.*.*"
-  workflow_dispatch:  
-  
+  workflow_dispatch:
+
 jobs:
   build:
     runs-on: windows-latest
@@ -21,15 +21,15 @@ jobs:
         dotnet-version: 7.0.x
 
     - name: Publish
-      run: dotnet publish League_Account_Manager.csproj -c Release --self-contained true -r win-x64 /p:PublishSingleFile=true
+      run: dotnet publish League_Account_Manager/League_Account_Manager.csproj -c Release --self-contained true -r win-x64 /p:PublishSingleFile=true
 
     - name: Create Release
       if: startsWith(github.ref, 'refs/tags/')
       uses: softprops/action-gh-release@v1
       with:
         files: |
-          bin/Release/net7.0-Windows/win-x64/publish/*.exe
-          bin/Release/net7.0-Windows/win-x64/publish/*.dll
+          League_Account_Manager/bin/Release/net7.0-Windows/win-x64/publish/*.exe
+          League_Account_Manager/bin/Release/net7.0-Windows/win-x64/publish/*.dll
         draft: false
         prerelease: false
       env:
